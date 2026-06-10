@@ -3,26 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D选号演练自动计算器(最终完美版)</title>
+    <title>3D选号演练工具 - 井字格九宫格计算法</title>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f4f9; padding: 20px; max-width: 600px; margin: 0 auto; color: #333; }
-        h2 { text-align: center; color: #2c3e50; margin-bottom: 5px; }
-        p.subtitle { text-align: center; color: #7f8c8d; font-size: 14px; margin-top: 0; }
-        .input-group { display: flex; justify-content: center; gap: 10px; margin: 20px 0; }
-        input { padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 4px; width: 150px; text-align: center; }
-        button { padding: 10px 20px; font-size: 16px; background-color: #e67e22; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        button:hover { background-color: #d35400; }
-        .grid-container { display: flex; justify-content: space-between; margin-top: 20px; gap: 20px; }
-        .grid-box { flex: 1; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center; }
-        .grid-title { font-weight: bold; margin-bottom: 10px; color: #34495e; font-size: 14px; }
-        .sudoku { display: grid; grid-template-columns: repeat(3, 1fr); width: 120px; margin: 0 auto; border: 2px solid #333; }
-        .cell { width: 40px; height: 40px; line-height: 40px; text-align: center; font-size: 18px; font-weight: bold; border: 1px solid #ccc; box-sizing: border-box; }
-        .cell.center-col { background-color: #fff9db; } /* 高亮中间列历史开奖号 */
-        .results { margin-top: 25px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .result-title { font-weight: bold; text-align: center; margin-bottom: 15px; color: #c0392b; border-bottom: 1px dashed #ccc; padding-bottom: 5px; }
-        .rec-row { display: flex; justify-content: space-around; text-align: center; }
-        .rec-item { font-size: 16px; font-weight: bold; }
-        .divider { margin: 2px 0; border-top: 2px solid #333; width: 50px; display: inline-block; }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+            color: #333;
+        }
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-top: 0;
+        }
+        .input-group {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        input {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 150px;
+            text-align: center;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #e67e22;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #d35400;
+        }
+        .grid-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            gap: 20px;
+        }
+        .grid-box {
+            flex: 1;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .grid-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #34495e;
+            font-size: 14px;
+        }
+        .sudoku {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            width: 120px;
+            margin: 0 auto;
+            border: 2px solid #333;
+        }
+        .cell {
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+        .cell.center-col {
+            background-color: #fff9db;
+        }
+        .results {
+            margin-top: 25px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .result-title {
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 15px;
+            color: #c0392b;
+            border-bottom: 1px dashed #ccc;
+            padding-bottom: 5px;
+        }
+        .rec-row {
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+        }
+        .rec-item {
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .divider {
+            margin: 2px 0;
+            border-top: 2px solid #333;
+            width: 50px;
+            display: inline-block;
+        }
     </style>
 </head>
 <body>
@@ -73,16 +171,12 @@
     </div>
 
     <script>
-        // 固定的镜像数对照表 [cite: 3, 13]
+        // 镜像映射表
         const mirrorMap = {1:6, 2:7, 3:8, 4:9, 5:0, 6:1, 7:2, 8:3, 9:4, 0:5};
 
-        // 核心数学规则函数
+        // 处理加减3后的结果：负数取绝对值，>=10取个位
         function processRule(num) {
-            // 如果是负数，直接去掉负号（取绝对值）
-            if (num < 0) {
-                num = Math.abs(num);
-            }
-            // 如果大于或等于10，直接取尾数（个位数）
+            if (num < 0) num = Math.abs(num);
             return num % 10;
         }
 
@@ -93,71 +187,48 @@
                 return;
             }
 
-            // 拆解百、十、个位 [cite: 3, 6]
-            const b = parseInt(input[0]); // 百位 [cite: 3, 6]
-            const s = parseInt(input[1]); // 十位 [cite: 3, 6]
-            const g = parseInt(input[2]); // 个位 [cite: 3, 6]
+            const b = parseInt(input[0]); // 百位
+            const s = parseInt(input[1]); // 十位
+            const g = parseInt(input[2]); // 个位
 
-            // ===================================================
-            // 核心逻辑：中间列为开奖号。左边减3（负数去负号），右边加3（超10取尾）
-            // ===================================================
-            
-            // 第一行（百位行）：中间是百位 b
-            let t2 = b; 
-            let t1 = processRule(b - 3); // 左边减3
-            let t3 = processRule(b + 3); // 右边加3
-
-            // 第二行（十位行）：中间是十位 s
-            let m2 = s;
-            let m1 = processRule(s - 3); // 左边减3
-            let m3 = processRule(s + 3); // 右边加3
-
-            // 第三行（个位行）：中间是个位 g
-            let b2 = g;
-            let b1 = processRule(g - 3); // 左边减3
-            let b3 = processRule(g + 3); // 右边加3
-
+            // 基础网格：中间列是百、十、个位，左边减3，右边加3
             const baseGrid = [
-                [t1, t2, t3],
-                [m1, m2, m3],
-                [b1, b2, b3]
+                [processRule(b-3), b, processRule(b+3)],
+                [processRule(s-3), s, processRule(s+3)],
+                [processRule(g-3), g, processRule(g+3)]
             ];
 
-            // 2. 生成转换网格 (每个格子转换为镜像数) [cite: 3, 10, 13]
+            // 转换网格：每个数字取镜像
             const tranGrid = baseGrid.map(row => row.map(cell => mirrorMap[cell]));
 
-            // 3. 渲染到页面网格中
+            // 渲染到页面
             const baseCells = document.getElementById('baseGrid').children;
             const tranCells = document.getElementById('tranGrid').children;
-            let index = 0;
-            for(let i=0; i<3; i++) {
-                for(let j=0; j<3; j++) {
-                    baseCells[index].innerText = baseGrid[i][j];
-                    tranCells[index].innerText = tranGrid[i][j];
-                    index++;
+            let idx = 0;
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 3; j++) {
+                    baseCells[idx].innerText = baseGrid[i][j];
+                    tranCells[idx].innerText = tranGrid[i][j];
+                    idx++;
                 }
             }
 
-            // 4. 提取推荐组合（对角线与原始号提取法） [cite: 3, 12]
-            let g1_t = `${baseGrid[0][0]}${baseGrid[1][1]}${baseGrid[2][2]}`;
-            let g1_b = `${mirrorMap[baseGrid[0][0]]}${mirrorMap[baseGrid[1][1]]}${mirrorMap[baseGrid[2][2]]}`;
+            // 推荐号码
+            const diag1 = `${baseGrid[0][0]}${baseGrid[1][1]}${baseGrid[2][2]}`;
+            const diag1Mirror = `${mirrorMap[baseGrid[0][0]]}${mirrorMap[baseGrid[1][1]]}${mirrorMap[baseGrid[2][2]]}`;
+            const diag2 = `${baseGrid[0][2]}${baseGrid[1][1]}${baseGrid[2][0]}`;
+            const diag2Mirror = `${mirrorMap[baseGrid[0][2]]}${mirrorMap[baseGrid[1][1]]}${mirrorMap[baseGrid[2][0]]}`;
+            const original = input;
+            const originalMirror = `${mirrorMap[b]}${mirrorMap[s]}${mirrorMap[g]}`;
 
-            let g2_t = `${baseGrid[0][2]}${baseGrid[1][1]}${baseGrid[2][0]}`;
-            let g2_b = `${mirrorMap[baseGrid[0][2]]}${mirrorMap[baseGrid[1][1]]}${mirrorMap[baseGrid[2][0]]}`;
-
-            let g3_t = input;
-            let g3_b = `${mirrorMap[b]}${mirrorMap[s]}${mirrorMap[g]}`;
-
-            // 显示推荐答案
-            document.getElementById('g1_top').innerText = g1_t;
-            document.getElementById('g1_btm').innerText = g1_b;
-            document.getElementById('g2_top').innerText = g2_t;
-            document.getElementById('g2_btm').innerText = g2_b;
-            document.getElementById('g3_top').innerText = g3_t;
-            document.getElementById('g3_btm').innerText = g3_b;
+            document.getElementById('g1_top').innerText = diag1;
+            document.getElementById('g1_btm').innerText = diag1Mirror;
+            document.getElementById('g2_top').innerText = diag2;
+            document.getElementById('g2_btm').innerText = diag2Mirror;
+            document.getElementById('g3_top').innerText = original;
+            document.getElementById('g3_btm').innerText = originalMirror;
         }
 
-        // 页面加载时自动运行一次默认值720
         window.onload = calculate;
     </script>
 </body>
