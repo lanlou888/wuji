@@ -2,234 +2,127 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D选号演练工具 - 井字格九宫格计算法</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
-            padding: 20px;
-            max-width: 600px;
-            margin: 0 auto;
-            color: #333;
-        }
-        h2 {
-            text-align: center;
-            color: #2c3e50;
-            margin-bottom: 5px;
-        }
-        .subtitle {
-            text-align: center;
-            color: #7f8c8d;
-            font-size: 14px;
-            margin-top: 0;
-        }
-        .input-group {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin: 20px 0;
-        }
-        input {
-            padding: 10px;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            width: 150px;
-            text-align: center;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: #e67e22;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        button:hover {
-            background-color: #d35400;
-        }
-        .grid-container {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-            gap: 20px;
-        }
-        .grid-box {
-            flex: 1;
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-        .grid-title {
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #34495e;
-            font-size: 14px;
-        }
-        .sudoku {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            width: 120px;
-            margin: 0 auto;
-            border: 2px solid #333;
-        }
-        .cell {
-            width: 40px;
-            height: 40px;
-            line-height: 40px;
-            text-align: center;
-            font-size: 18px;
-            font-weight: bold;
-            border: 1px solid #ccc;
-            box-sizing: border-box;
-        }
-        .cell.center-col {
-            background-color: #fff9db;
-        }
-        .results {
-            margin-top: 25px;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .result-title {
-            font-weight: bold;
-            text-align: center;
-            margin-bottom: 15px;
-            color: #c0392b;
-            border-bottom: 1px dashed #ccc;
-            padding-bottom: 5px;
-        }
-        .rec-row {
-            display: flex;
-            justify-content: space-around;
-            text-align: center;
-        }
-        .rec-item {
-            font-size: 16px;
-            font-weight: bold;
-        }
-        .divider {
-            margin: 2px 0;
-            border-top: 2px solid #333;
-            width: 50px;
-            display: inline-block;
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #f8f9fa; padding: 10px; margin: 0; color: #333; display: flex; justify-content: center; }
+        .calc-container { background: #fff; border: 1px solid #e0e0e0; border-radius: 12px; padding: 15px; width: 100%; max-width: 500px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); box-sizing: border-box; }
+        .calc-title { text-align: center; color: #2c3e50; font-size: 18px; margin: 0 0 12px 0; font-weight: bold; }
+        .input-row { display: flex; justify-content: center; gap: 10px; margin-bottom: 15px; }
+        #drawNo { width: 110px; height: 38px; font-size: 16px; padding: 0; text-align: center; border: 2px solid #bdc3c7; border-radius: 6px; box-sizing: border-box; }
+        .input-row button { height: 38px; padding: 0 15px; font-size: 14px; font-weight: bold; background-color: #e67e22; color: #fff; border: none; border-radius: 6px; cursor: pointer; box-sizing: border-box; }
+        .input-row button:hover { background-color: #d35400; }
+        .grids-flex { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 15px; }
+        .grid-box { flex: 1; background: #fff; border: 1px solid #f0f0f0; border-radius: 8px; padding: 8px; text-align: center; }
+        .grid-name { font-size: 12px; font-weight: bold; color: #7f8c8d; margin-bottom: 6px; }
+        .sudoku { display: grid; grid-template-columns: repeat(3, 1fr); width: 108px; margin: 0 auto; border: 2px solid #2c3e50; background: #fff; }
+        .cell { width: 36px; height: 36px; line-height: 36px; text-align: center; font-size: 16px; font-weight: bold; border: 1px solid #dcdde1; box-sizing: border-box; color: #2c3e50; }
+        .cell.highlight { background-color: #fff9db; }
+        .results-box { background: #fafbfc; border: 1px solid #eaedf0; border-radius: 8px; padding: 12px; }
+        .res-title { font-weight: bold; text-align: center; margin-bottom: 12px; color: #c0392b; border-bottom: 1px dashed #e1b12c; padding-bottom: 6px; font-size: 13px; }
+        .res-flex { display: flex; justify-content: space-between; gap: 6px; }
+        .res-card { flex: 1; text-align: center; background: #fff; border: 1px solid #e9ecef; border-radius: 6px; padding: 8px 2px; }
+        .card-head { font-size: 11px; color: #95a5a6; margin-bottom: 4px; font-weight: bold; }
+        .num-out { font-size: 15px; font-weight: bold; color: #2c3e50; letter-spacing: 2px; line-height: 1.2; }
+        .card-line { width: 30px; margin: 4px auto; border-top: 2px solid #2c3e50; }
+        
+        /* 手机端自适应：当屏幕太窄时，推荐组合变成上下排列，防止内容被挤出或遮挡 */
+        @media (max-width: 440px) {
+            .grids-flex { gap: 8px; }
+            .sudoku { width: 96px; }
+            .cell { width: 32px; height: 32px; line-height: 32px; font-size: 14px; }
+            .res-flex { flex-direction: column; gap: 8px; }
+            .res-card { display: flex; align-items: center; justify-content: space-between; padding: 8px 15px; }
+            .card-head { margin-bottom: 0; font-size: 13px; }
+            .num-wrapper { display: flex; align-items: center; gap: 8px; }
+            .card-line { width: 2px; height: 15px; border-top: none; border-left: 2px solid #2c3e50; margin: 0; }
         }
     </style>
 </head>
 <body>
-
-    <h2>3D 选号演练表</h2>
-    <p class="subtitle">井字格变换九宫格自动计算工具</p>
-
-    <div class="input-group">
-        <input type="text" id="drawingNo" placeholder="输入3位开奖号" maxlength="3" value="720">
-        <button onclick="calculate()">直接出答案</button>
-    </div>
-
-    <div class="grid-container">
-        <div class="grid-box">
-            <div class="grid-title">基础网格 (Base Grid)</div>
-            <div class="sudoku" id="baseGrid">
-                <div class="cell"></div><div class="cell center-col"></div><div class="cell"></div>
-                <div class="cell"></div><div class="cell center-col"></div><div class="cell"></div>
-                <div class="cell"></div><div class="cell center-col"></div><div class="cell"></div>
+    <div class="calc-container">
+        <h2 class="calc-title">3D选号演练自动计算工具</h2>
+        <div class="input-row">
+            <input type="text" id="drawNo" placeholder="开奖号" maxlength="3" value="720">
+            <button type="button" onclick="runCalc()">直接出答案</button>
+        </div>
+        <div class="grids-flex">
+            <div class="grid-box">
+                <div class="grid-name">基础网格 (Base)</div>
+                <div class="sudoku" id="baseG">
+                    <div class="cell"></div><div class="cell highlight"></div><div class="cell"></div>
+                    <div class="cell"></div><div class="cell highlight"></div><div class="cell"></div>
+                    <div class="cell"></div><div class="cell highlight"></div><div class="cell"></div>
+                </div>
+            </div>
+            <div class="grid-box">
+                <div class="grid-name">转换网格 (Translated)</div>
+                <div class="sudoku" id="tranG">
+                    <div class="cell"></div><div class="cell"></div><div class="cell"></div>
+                    <div class="cell"></div><div class="cell"></div><div class="cell"></div>
+                    <div class="cell"></div><div class="cell"></div><div class="cell"></div>
+                </div>
             </div>
         </div>
-        <div class="grid-box">
-            <div class="grid-title">转换网格 (Translated Grid)</div>
-            <div class="sudoku" id="tranGrid">
-                <div class="cell"></div><div class="cell"></div><div class="cell"></div>
-                <div class="cell"></div><div class="cell"></div><div class="cell"></div>
-                <div class="cell"></div><div class="cell"></div><div class="cell"></div>
+        <div class="results-box">
+            <div class="res-title">🎯 推荐号码组合 (Suggested Numbers)</div>
+            <div class="res-flex">
+                <div class="res-card">
+                    <div class="card-head">组合一 (主对角)</div>
+                    <div class="num-wrapper">
+                        <div class="num-out" id="g1_t">---</div>
+                        <div class="card-line"></div>
+                        <div class="num-out" id="g1_b">---</div>
+                    </div>
+                </div>
+                <div class="res-card">
+                    <div class="card-head">组合二 (副对角)</div>
+                    <div class="num-wrapper">
+                        <div class="num-out" id="g2_t">---</div>
+                        <div class="card-line"></div>
+                        <div class="num-out" id="g2_b">---</div>
+                    </div>
+                </div>
+                <div class="res-card">
+                    <div class="card-head">组合三 (历史号)</div>
+                    <div class="num-wrapper">
+                        <div class="num-out" id="g3_t">---</div>
+                        <div class="card-line"></div>
+                        <div class="num-out" id="g3_b">---</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-
-    <div class="results">
-        <div class="result-title">🎯 推荐号码组合 (Suggested Numbers)</div>
-        <div class="rec-row">
-            <div class="rec-item">
-                <div>组合一 (主对角)</div>
-                <span id="g1_top">---</span><br><span class="divider"></span><br><span id="g1_btm">---</span>
-            </div>
-            <div class="rec-item">
-                <div>组合二 (副对角)</div>
-                <span id="g2_top">---</span><br><span class="divider"></span><br><span id="g2_btm">---</span>
-            </div>
-            <div class="rec-item">
-                <div>组合三 (历史号)</div>
-                <span id="g3_top">---</span><br><span class="divider"></span><br><span id="g3_btm">---</span>
-            </div>
-        </div>
-    </div>
-
     <script>
-        // 镜像映射表
-        const mirrorMap = {1:6, 2:7, 3:8, 4:9, 5:0, 6:1, 7:2, 8:3, 9:4, 0:5};
-
-        // 处理加减3后的结果：负数取绝对值，>=10取个位
-        function processRule(num) {
-            if (num < 0) num = Math.abs(num);
-            return num % 10;
-        }
-
-        function calculate() {
-            const input = document.getElementById('drawingNo').value;
-            if (input.length !== 3 || isNaN(input)) {
-                alert('❌ 请输入完整的3位数字开奖号！');
-                return;
-            }
-
-            const b = parseInt(input[0]); // 百位
-            const s = parseInt(input[1]); // 十位
-            const g = parseInt(input[2]); // 个位
-
-            // 基础网格：中间列是百、十、个位，左边减3，右边加3
-            const baseGrid = [
-                [processRule(b-3), b, processRule(b+3)],
-                [processRule(s-3), s, processRule(s+3)],
-                [processRule(g-3), g, processRule(g+3)]
-            ];
-
-            // 转换网格：每个数字取镜像
-            const tranGrid = baseGrid.map(row => row.map(cell => mirrorMap[cell]));
-
-            // 渲染到页面
-            const baseCells = document.getElementById('baseGrid').children;
-            const tranCells = document.getElementById('tranGrid').children;
+        const mirs = {1:6, 2:7, 3:8, 4:9, 5:0, 6:1, 7:2, 8:3, 9:4, 0:5};
+        function rule(n) { return Math.abs(n) % 10; }
+        function runCalc() {
+            const val = document.getElementById('drawNo').value.trim();
+            if (val.length !== 3 || isNaN(val)) { alert('请输入3位数字！'); return; }
+            const b = parseInt(val[0]), s = parseInt(val[1]), g = parseInt(val[2]);
+            let t2 = b, t1 = rule(b - 3), t3 = rule(b + 3);
+            let m2 = s, m1 = rule(s - 3), m3 = rule(s + 3);
+            let b2 = g, b1 = rule(g - 3), b3 = rule(g + 3);
+            const bg = [[t1, t2, t3], [m1, m2, m3], [b1, b2, b3]];
+            const tg = bg.map(r => r.map(c => mirs[c]));
+            const bCells = document.getElementById('baseG').children;
+            const tCells = document.getElementById('tranG').children;
             let idx = 0;
-            for (let i = 0; i < 3; i++) {
-                for (let j = 0; j < 3; j++) {
-                    baseCells[idx].innerText = baseGrid[i][j];
-                    tranCells[idx].innerText = tranGrid[i][j];
+            for(let i=0; i<3; i++) {
+                for(let j=0; j<3; j++) {
+                    bCells[idx].innerText = bg[i][j];
+                    tCells[idx].innerText = tg[i][j];
                     idx++;
                 }
             }
-
-            // 推荐号码
-            const diag1 = `${baseGrid[0][0]}${baseGrid[1][1]}${baseGrid[2][2]}`;
-            const diag1Mirror = `${mirrorMap[baseGrid[0][0]]}${mirrorMap[baseGrid[1][1]]}${mirrorMap[baseGrid[2][2]]}`;
-            const diag2 = `${baseGrid[0][2]}${baseGrid[1][1]}${baseGrid[2][0]}`;
-            const diag2Mirror = `${mirrorMap[baseGrid[0][2]]}${mirrorMap[baseGrid[1][1]]}${mirrorMap[baseGrid[2][0]]}`;
-            const original = input;
-            const originalMirror = `${mirrorMap[b]}${mirrorMap[s]}${mirrorMap[g]}`;
-
-            document.getElementById('g1_top').innerText = diag1;
-            document.getElementById('g1_btm').innerText = diag1Mirror;
-            document.getElementById('g2_top').innerText = diag2;
-            document.getElementById('g2_btm').innerText = diag2Mirror;
-            document.getElementById('g3_top').innerText = original;
-            document.getElementById('g3_btm').innerText = originalMirror;
+            document.getElementById('g1_t').innerText = `${bg[0][0]}${bg[1][1]}${bg[2][2]}`;
+            document.getElementById('g1_b').innerText = `${mirs[bg[0][0]]}${mirs[bg[1][1]]}${mirs[bg[2][2]]}`;
+            document.getElementById('g2_t').innerText = `${bg[0][2]}${bg[1][1]}${bg[2][0]}`;
+            document.getElementById('g2_b').innerText = `${mirs[bg[0][2]]}${mirs[bg[1][1]]}${mirs[bg[2][0]]}`;
+            document.getElementById('g3_t').innerText = val;
+            document.getElementById('g3_b').innerText = `${mirs[b]}${mirs[s]}${mirs[g]}`;
         }
-
-        window.onload = calculate;
+        setTimeout(runCalc, 200);
     </script>
 </body>
 </html>
